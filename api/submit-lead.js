@@ -1,17 +1,17 @@
-// api/submit-lead.js
 import axios from "axios";
 
 export default async function handler(req, res) {
-  // Allow requests only from your GitHub Pages URL
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  // ✅ Always set CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "https://sabbir990.github.io");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle preflight OPTIONS request
+  // ✅ Must handle preflight (OPTIONS) before anything else
   if (req.method === "OPTIONS") {
     return res.status(200).end();
   }
 
+  // ✅ Reject unsupported methods
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
       dropOffLocation2: obj.drop_off_location_2,
       files: obj.files ? [obj.files] : [],
       inventoryList: obj.inventory_list,
-      price: obj.price
+      price: obj.price,
     };
 
     console.log("Sending to SmartMoving:", submissionData);
@@ -49,10 +49,16 @@ export default async function handler(req, res) {
       { headers: { "Content-Type": "application/json" } }
     );
 
+    // ✅ Always return success with CORS header
     res.status(200).json({ success: true, data: response.data });
 
   } catch (error) {
     console.error("Error sending to SmartMoving:", error.response?.data || error.message);
-    res.status(500).json({ success: false, error: error.response?.data || error.message });
+
+    // ✅ Even errors need the CORS header to reach frontend
+    res.status(500).json({
+      success: false,
+      error: error.response?.data || error.message,
+    });
   }
 }

@@ -3,6 +3,9 @@ import axios from "axios";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
 
 dotenv.config();
 
@@ -10,6 +13,12 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+
+app.use(cors({
+  origin: ["https://sabbir990.github.io", "http://127.0.0.1:5500"], // your frontend URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}));
 
 const PORT = process.env.PORT || 8000;
 const SMARTMOVING_BASE_URL = process.env.SMARTMOVING_BASE_URL;
